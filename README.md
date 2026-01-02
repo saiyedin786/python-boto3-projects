@@ -170,6 +170,92 @@ Output on running the lambda function
 
 
 
+==================================================================================================================================
+Assignment 2
+==================================================================================================================================
+
+Assignment 2: Automated S3 Bucket Cleanup Using AWS Lambda and Boto3
+
+Objective: To gain experience with AWS Lambda and Boto3 by creating a Lambda function that will automatically clean up old files in an S3 bucket.
+
+Task: Automate the deletion of files older than 30 days in a specific S3 bucket.
+
+Instructions:
+1. S3 Setup:
+   - Navigate to the S3 dashboard and create a new bucket.
+   - Upload multiple files to this bucket, ensuring that some files are older than 30 days (you may need to adjust your system's date temporarily for this or use old files).
+
+2. Lambda IAM Role:
+   - In the IAM dashboard, create a new role for Lambda.
+   - Attach the `AmazonS3FullAccess` policy to this role. (Note: For enhanced security in real-world scenarios, use more restrictive permissions.)
+
+3. Lambda Function:
+   - Navigate to the Lambda dashboard and create a new function.
+   - Choose Python 3.x as the runtime.
+   - Assign the IAM role created in the previous step.
+   - Write the Boto3 Python script to:
+     1. Initialize a boto3 S3 client.
+     2. List objects in the specified bucket.
+     3. Delete objects older than 30 days.
+     4. Print the names of deleted objects for logging purposes.
+
+4. Manual Invocation:
+   - After saving your function, manually trigger it.
+   - Go to the S3 dashboard and confirm that only files newer than 30 days remain.
+
+
+Project Solution:
+1. S3 Setup:
+   - Navigate to the S3 dashboard and create a new bucket.
+   - Upload multiple files to this bucket, ensuring that some files are older than 30 days (you may need to adjust your system's date temporarily for this or use old files).
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/20c9d3ad-65c1-4ede-84db-180179ff0bef" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/81da4a21-c283-4503-92a8-8f995c3f0fd3" />
+Created 10 files named abc1 --- abc10 in current date and create 5 files in backdate named def1 ---5 locally in my computer
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/4be97ed5-817a-48b3-b729-efd1a5153aa7" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/a4a74a0f-a0d9-4ccd-825c-6c00e133230e" />
+
+2. Lambda IAM Role:
+   - In the IAM dashboard, create a new role for Lambda.
+   - Attach the `AmazonS3FullAccess` policy to this role. (Note: For enhanced security in real-world scenarios, use more restrictive permissions.)
+
+Creatinn an IAM Role:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/73eccef6-130b-422c-8d65-69a61013edf9" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/9a9f2080-98d7-4e77-86bc-4f62eb6449b7" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/38b35dbb-989f-41db-8621-cd031cf22dbf" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/1904564c-1e4a-4a63-9f24-1f2290e2983b" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/740d1d92-c4b2-40cb-b818-f3d0a80dea96" />
+
+3. Lambda Function:
+   - Navigate to the Lambda dashboard and create a new function.
+   - Choose Python 3.x as the runtime.
+   - Assign the IAM role created in the previous step.
+   - Write the Boto3 Python script to:
+     1. Initialize a boto3 S3 client.
+     2. List objects in the specified bucket.
+     3. Delete objects older than 30 days.
+     4. Print the names of deleted objects for logging purposes.
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/a29cf5c8-708b-4794-adbf-dd9f934a5d28" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/b5801139-a6c6-4d28-be7f-d7ae1b0b5ca4" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/93018285-5431-4484-88a3-111b6d3016a8" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/5b21ef8b-7971-42be-a719-f099b17367ac" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/7feb80b0-fcda-4656-9b8c-d21192150e4a" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/9cc15acc-0597-4589-9fe7-f58d6e9696f1" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/68abed15-99cf-429d-b32b-98842bcbab8e" />
+
+Deploying changes:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/b6c04640-f4f5-42c6-b231-82dcbfa28787" />
+Creating test event:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/94720831-f19b-4c3a-b70e-8a9b1cfa6b3c" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/95a16aa5-910d-4fd2-9131-67d18b96a308" />
+
+
+Succcessful  invoking the testEvent
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/d925ca2e-a6ed-44ac-bea6-f10bb049a998" />
+
+Vefying from the console:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/bce2943d-cfbb-4c51-86da-0db9b48042ff" />
 
 
 
@@ -191,4 +277,21 @@ Output on running the lambda function
 
 
 
-Auto-Start instance:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
