@@ -258,6 +258,187 @@ Vefying from the console:
 <img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/bce2943d-cfbb-4c51-86da-0db9b48042ff" />
 
 
+==============================================================================================================================
+
+Assignment 6: Monitor and Alert High AWS Billing Using AWS Lambda, Boto3, and SNS
+
+Objective: Create an automated alerting mechanism for when your AWS billing exceeds a certain threshold.
+
+Task: Set up a Lambda function to check your AWS billing amount daily, and if it exceeds a specified threshold, send an alert via SNS.
+Instructions:
+1. SNS Setup:
+   - Navigate to the SNS dashboard and create a new topic.
+   - Subscribe your email to this topic.
+2. Lambda IAM Role:
+   - In the IAM dashboard, create a new role for Lambda.
+   - Attach policies that allow reading CloudWatch metrics and sending SNS notifications.
+3. Lambda Function:
+   - Navigate to the Lambda dashboard and create a new function.
+   - Choose Python 3.x as the runtime.
+   - Assign the IAM role created in the previous step.
+   - Write the Boto3 Python script to:
+     1. Initialize boto3 clients for CloudWatch and SNS.
+     2. Retrieve the AWS billing metric from CloudWatch.
+     3. Compare the billing amount with a threshold (e.g., $50).
+     4. If the billing exceeds the threshold, send an SNS notification.
+     5. Print messages for logging purposes.
+4. Event Source (Bonus):
+   - Attach an event source, like Amazon CloudWatch Events, to trigger the Lambda function daily.
+5. Testing:
+   - Manually trigger the Lambda function or wait for the scheduled event.
+   - If your billing is over the threshold, you should receive an email alert.
+
+
+
+
+
+
+
+
+Project solution:
+SNS Setup (Alert Mechanism)
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/a847b397-c95b-4c28-867d-5ea9434d0d19" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/6a34552d-3bba-4a00-8715-bb4e62c0e38e" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/80a6d463-bd5b-4c83-b002-8c696c58815b" />
+
+Subscribing Email:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/3e952101-8797-49a0-8abe-04f497066af1" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/4be4d28d-76c6-49f7-892a-f51f29da0d4f" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/138b2a8a-9212-4079-95a2-1180d9d9428a" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/b0064ba2-577b-4e0d-9367-42dba0ea741d" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/4205ebd4-74aa-4aa3-8c46-3350b3b05aed" />
+
+
+Lambda IAM Role Setup:
+Creating IAM Role
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/0c98ba13-212c-4258-9eb9-d67f29d335cd" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/097a582f-3a72-4e54-afa6-019d91eb987c" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/ec7bbf5f-b0f2-43a9-b8bc-ab59475211c3" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/b4c71041-7293-45ae-b3be-b6208959ba78" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/44a3d730-64af-49fb-b4c3-34ac81014a27" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/36b4ab01-b9c5-458b-8990-086991320a39" />
+
+Lambda Function Setup:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/dd2b332c-982b-446e-b7dc-70b30a999037" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/69fcce59-d572-4af6-8a92-ab15b9afda9e" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/03b8dc40-22ef-47ac-a0b1-a653d6c9f02b" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/90dd228d-85e7-4cae-9432-ee2c915f5626" />
+
+
+Boto3-python Code for 
+import boto3
+from datetime import datetime, timedelta
+
+# ---------------- CONFIG ----------------
+THRESHOLD = 50.0  # USD
+SNS_TOPIC_ARN = "arn:aws:sns:ap-south-1:254292659362:billing-alert-topic"
+# ----------------------------------------
+
+def lambda_handler(event, context):
+    # CloudWatch Billing metrics are only in us-east-1
+    cloudwatch = boto3.client("cloudwatch", region_name="us-east-1")
+    sns = boto3.client("sns")
+
+    # Time range (last 1 day)
+    end_time = datetime.utcnow()
+    start_time = end_time - timedelta(days=1)
+
+    # Get billing metric
+    response = cloudwatch.get_metric_statistics(
+        Namespace="AWS/Billing",
+        MetricName="EstimatedCharges",
+        Dimensions=[
+            {
+                "Name": "Currency",
+                "Value": "USD"
+            }
+        ],
+        StartTime=start_time,
+        EndTime=end_time,
+        Period=86400,
+        Statistics=["Maximum"]
+    )
+
+    if not response["Datapoints"]:
+        print("No billing data available")
+        return
+
+    billing_amount = response["Datapoints"][0]["Maximum"]
+    print(f"Current estimated billing: ${billing_amount}")
+
+    # Compare with threshold
+    if billing_amount > THRESHOLD:
+        message = (
+            f"AWS Billing Alert!\n\n"
+            f"Current estimated charges: ${billing_amount}\n"
+            f"Threshold: ${THRESHOLD}\n"
+        )
+
+        sns.publish(
+            TopicArn=SNS_TOPIC_ARN,
+            Subject="AWS Billing Alert",
+            Message=message
+        )
+
+        print("Alert sent via SNS")
+    else:
+        print("Billing is within limit")
+
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/64a27acd-fe2d-43d6-87ec-636247283d6d" />
+
+Creating a test event
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/78f100b6-8988-4a32-8a2c-29cbbfc49c5e" />
+
+
+Testing with testEvent
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/5037b30c-b3bf-4561-adfd-80335d3ef8de" />
+
+Create EventBridge Rule:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/d01fc044-e77e-48f8-bdc5-c65df254e1e5" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/31137572-4b0e-4e1d-a950-3cc5cd99b1ea" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/2f671360-d544-4c72-97ee-b4c2818e82df" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/f6ab6405-ba50-450d-9b85-d73c52c0a1c7" />
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/eb77de69-2cd0-4732-b8e3-57b9e183043d" />
+Triggering manually the lambda function:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/783f1eda-c5e0-40a0-a7c2-e1eac5ffd425" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/2f0d8cb4-657a-49b4-aebe-dbc4e400b088" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/4a40c1bf-1119-474f-8e25-9bd9a611667c" />
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/95dad4b1-97c9-4e5a-9aa3-51f7114e03b8" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
