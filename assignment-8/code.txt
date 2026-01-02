@@ -1,0 +1,47 @@
+import json
+import boto3
+import logging
+
+# Initialize logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# Initialize Comprehend client
+comprehend = boto3.client('comprehend')
+
+def lambda_handler(event, context):
+    try:
+        # 1. Extract review text from event
+        review_text = event.get("review")
+
+        if not review_text:
+            raise ValueError("No review text provided")
+
+        logger.info(f"User Review: {review_text}")
+
+        # 2. Analyze sentiment
+        response = comprehend.detect_sentiment(
+            Text=review_text,
+            LanguageCode='en'
+        )
+
+        sentiment = response['Sentiment']
+        sentiment_scores = response['SentimentScore']
+
+        # 3. Log results
+        logger.info(f"Detected Sentiment: {sentiment}")
+        logger.info(f"Sentiment Scores: {sentiment_scores}")
+
+        return {
+            "statusCode": 200,
+            "review": review_text,
+            "sentiment": sentiment,
+            "scores": sentiment_scores
+        }
+
+    except Exception as e:
+        logger.error(f"Error: {str(e)}")
+        return {
+            "statusCode": 500,
+            "error": str(e)
+        }
