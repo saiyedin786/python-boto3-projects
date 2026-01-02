@@ -411,6 +411,94 @@ Triggering manually the lambda function:
 
 
 
+==========================================================================================================================================
+
+Assignment 7: DynamoDB Item Change Alert Using AWS Lambda, Boto3, and SNS
+
+Objective: Automate the process to receive an alert whenever an item in a DynamoDB table gets updated.
+Task: Set up a Lambda function that gets triggered when an item in a DynamoDB table is updated and sends an alert via SNS.
+Instructions:
+1. DynamoDB Setup:
+   - Navigate to the DynamoDB dashboard and create a table.
+   - Add a few items to the table.
+2. SNS Setup:
+   - Navigate to the SNS dashboard and create a new topic.
+   - Subscribe your email to this topic.
+3. Lambda IAM Role:
+   - In the IAM dashboard, create a new role for Lambda.
+   - Attach policies that allow Lambda to read DynamoDB Streams and send SNS notifications.
+4. Lambda Function:
+   - Navigate to the Lambda dashboard and create a new function.
+   - Choose Python 3.x as the runtime.
+   - Assign the IAM role created in the previous step.
+   - Write the Boto3 Python script to:
+     1. Extract the modified DynamoDB item from the event.
+     2. Send an SNS notification detailing the change.
+     3. Log messages for tracking.
+5. DynamoDB Stream:
+   - Enable DynamoDB Streams on your table and set the view type to "New and old images".
+   - Attach the Lambda function to the DynamoDB Stream.
+6. Testing:
+   - Update an item in your DynamoDB table.
+   - Confirm that you receive an SNS alert detailing the change.
+Submission:
+- Provide the Python code used in the Lambda function.
+- Document the steps followed.
+- Share screenshots of the SNS alert and Lambda logs.
+
+
+
+
+Project solution:
+DynamoDB Setup:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/ac506db2-f619-4fed-9ed9-5471c2ed082b" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/e4703b10-b094-4872-a14c-e9500c7d534b" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/69fac9ac-6b3a-4822-a3f8-b15d5e976da1" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/70ef94ae-01c0-468b-b3dc-085d2d2fb7f7" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/2eef2253-f1fd-472d-83fd-0332160a6674" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/add9cbac-d76e-4eb0-9f03-d9ebdc39c405" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/3b46c35f-748d-4afc-bcd3-44fad6b6b498" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/3f61c7b0-e354-43a2-a90f-bfa541331cb6" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/7c61770c-99c8-43cb-ba60-21e2bb391368" />
+
+
+SNS Setup:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/294d7a63-27a0-4103-a713-774b9d41100b" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/4af5b057-6c1a-417e-8534-371fb465b2cb" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/d1c23b5a-0593-472b-a377-0e3339fb9cab" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/097d5116-9f2b-4bb8-834a-cd40533e9bf7" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/6ecba0b1-170c-415d-89a6-fef3dd78df92" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/0dbe63f4-56bf-4fe1-962b-fd813ba6a310" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/65ac968a-27c5-462c-8de6-678d1390f3d8" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/015d83b4-1e6f-437a-a1fd-c5cb9e6a7a07" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/3870a299-51f6-4f73-a07d-c55ceeb31eaa" />
+
+IAM Role for Lambda:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/5be86522-b8ec-4a6d-8caa-bfc59c4c5d21" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/f5a83429-fdf4-4ab5-a45c-7f0385c74017" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
