@@ -476,6 +476,109 @@ SNS Setup:
 IAM Role for Lambda:
 <img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/5be86522-b8ec-4a6d-8caa-bfc59c4c5d21" />
 <img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/f5a83429-fdf4-4ab5-a45c-7f0385c74017" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/7367e60b-7931-47dd-958e-4b1ebaaa318e" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/2ae288f3-e727-4dc4-8ba5-c5d3519014e4" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/a1fc78e5-7bc2-4657-891a-c48cbb4bc8cd" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/feb9f0d5-8f08-4925-949a-be013706bc2f" />
+
+
+Lambda Function Creation:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/a79c6976-7abc-4972-bcf8-741ad7d3b3ad" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/69c68d3f-e1e1-44eb-9aab-412af96cecde" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/74c2993c-0ea5-430e-bb01-71faab427b24" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/68196022-39d8-4709-8af2-8738cd45d73c" />
+
+Attach DynamoDB Stream to Lambda:
+•  Inside Lambda → Configuration → Triggers
+•  Click Add trigger
+•  Select DynamoDB
+•  Choose:
+•	Table: EmployeeTable
+•	Batch size: 1
+•	Starting position: LATEST
+•  Enable trigger
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/56a9cc25-bd75-4600-a702-1a0cccf26474" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/75c958cd-b161-4135-b7e9-10450d54c685" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/2e935cf1-903e-4290-9b07-124b763a4b2e" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/08aa6796-3503-4f6c-a816-cc6ef645910c" />
+
+lambda function code:
+Lamba Function code:
+import json
+import boto3
+
+sns = boto3.client('sns')
+
+SNS_TOPIC_ARN = "arn:aws:sns:ap-south-1:254292659362:DynamoDB-Update-Alert"
+
+def lambda_handler(event, context):
+    print("Received event:", json.dumps(event))
+
+    for record in event['Records']:
+        # Process only MODIFY events
+        if record['eventName'] == 'MODIFY':
+            old_image = record['dynamodb']['OldImage']
+            new_image = record['dynamodb']['NewImage']
+
+            message = (
+                "DynamoDB Item Updated\n\n"
+                f"Old Item:\n{json.dumps(old_image, indent=2)}\n\n"
+                f"New Item:\n{json.dumps(new_image, indent=2)}"
+            )
+
+            response = sns.publish(
+                TopicArn=SNS_TOPIC_ARN,
+                Subject="DynamoDB Item Update Alert",
+                Message=message
+            )
+
+            print("SNS notification sent:", response)
+
+    return {
+        'statusCode': 200,
+        'body': 'Processed DynamoDB update event'
+    }
+
+
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/d4223a1d-331b-40ea-b73e-2a8867dce3e2" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/37df6543-d875-4d69-986d-76588ed35aa4" />
+
+
+Testing the Setup
+•  Go to DynamoDB → EmployeeTable
+•  Edit an existing item:
+•	Change salary from 50000 → 60000
+•  Save changes
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/ec06d253-38cc-4733-a189-6034c7083a4d" />
+
+Cloudwatch logs:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/2eb73f35-6f11-4d82-838e-f30a8022aa5f" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/0b8fa2cb-d95c-479b-9a3e-6d63e06ec55a" />
+
+Email received:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/677f1386-f7bb-45d8-96d1-717f4e90231f" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
