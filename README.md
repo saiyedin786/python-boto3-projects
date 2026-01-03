@@ -561,6 +561,170 @@ Email received:
 <img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/677f1386-f7bb-45d8-96d1-717f4e90231f" />
 
 
+================================================================
+Assignment 8:
+================================================================
+
+Assignment 8: Analyze Sentiment of User Reviews Using AWS Lambda, Boto3, and Amazon Comprehend
+
+Objective: Automatically analyze and categorize the sentiment of user reviews using Amazon Comprehend.
+Task: Set up a Lambda function to receive user reviews, analyze their sentiment using Amazon Comprehend, and log the results.
+Instructions:
+1. Lambda IAM Role:
+   - In the IAM dashboard, create a new role for Lambda.
+   - Attach policies that allow Lambda to use Amazon Comprehend.
+2. Lambda Function:
+   - Navigate to the Lambda dashboard and create a new function.
+   - Choose Python 3.x as the runtime.
+   - Assign the IAM role created previously.
+   - Write the Boto3 Python script to:
+     1. Extract the user review from an event.
+     2. Use Amazon Comprehend to analyze the sentiment of the review.
+     3. Log the sentiment result.
+3. Testing:
+   - Manually trigger the Lambda function with sample reviews.
+   - Confirm the sentiment analysis results in the Lambda logs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Project Solution:
+
+Create IAM Role for Lambda
+
+Step 1: Open IAM
+•	Go to IAM → Roles → Create role
+•	Trusted entity: AWS service
+•	Use case: Lambda
+•	Click Next
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/eb94bc99-3f4e-4014-88e2-30ff319747e9" />
+
+Attach Policies
+Attach the following policies:
+ComprehendFullAccess
+(or use custom policy below for best practice)
+AWSLambdaBasicExecutionRole
+(required for CloudWatch logs)
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/9881e005-0ed8-46a2-83d5-2bc55fdcef91" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/f29f8863-caf6-4e08-b26a-187c00cb6cb5" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/2311d340-d538-4a95-b6f1-bfdf18a9e8d3" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/7d1087f8-6f7e-446d-a2e1-d805be670478" />
+
+Create Lambda Function
+Step 1: Open Lambda
+•	Go to AWS Lambda → Create function
+•	Choose Author from scratch
+•	Function name: sentiment-analysis-lambda
+•	Runtime: Python 3.10
+•	Execution role: Use existing role
+•	Select: lambda-comprehend-role
+•	Click Create function
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/7b08c87c-e5b0-4593-9970-ac977cfea566" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/20a197e1-0846-4d78-94cf-b8f66a010528" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/e469cfd7-c268-4595-b424-2e56e8fcd1c3" />
+
+
+Python boto3 code:
+import json
+import boto3
+import logging
+
+# Initialize logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# Initialize Comprehend client
+comprehend = boto3.client('comprehend')
+
+def lambda_handler(event, context):
+    try:
+        # 1. Extract review text from event
+        review_text = event.get("review")
+
+        if not review_text:
+            raise ValueError("No review text provided")
+
+        logger.info(f"User Review: {review_text}")
+
+        # 2. Analyze sentiment
+        response = comprehend.detect_sentiment(
+            Text=review_text,
+            LanguageCode='en'
+        )
+
+        sentiment = response['Sentiment']
+        sentiment_scores = response['SentimentScore']
+
+        # 3. Log results
+        logger.info(f"Detected Sentiment: {sentiment}")
+        logger.info(f"Sentiment Scores: {sentiment_scores}")
+
+        return {
+            "statusCode": 200,
+            "review": review_text,
+            "sentiment": sentiment,
+            "scores": sentiment_scores
+        }
+
+    except Exception as e:
+        logger.error(f"Error: {str(e)}")
+        return {
+            "statusCode": 500,
+            "error": str(e)
+        }
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/a683ca88-ac8b-4a95-bde7-19ff73257592" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/1329990a-1304-4b24-bf40-24440482f07f" />
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/f6b8b82e-4342-40c4-956b-43ba369e06e1" />
+
+
+Create Test Event:
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/a850f8ed-06fa-44f8-8a5b-13f1ece2168d" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/2255fd70-bef1-4793-9d79-80fe8356513a" />
+
+Now testing with test event:
+
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/432e633a-c862-446e-9ce9-070e380836f6" />
+
+Verifying cloudwatch Logs:
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/30527395-994d-4306-9d13-453660b264ce" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/0711ee8d-f1f6-4bcf-bd45-d2d1376e3562" />
+<img width="979" height="552" alt="image" src="https://github.com/user-attachments/assets/648328c7-dbc9-43a0-b4ed-d47a2e9d4077" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
